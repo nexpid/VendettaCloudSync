@@ -1,0 +1,19 @@
+{
+	"name": "vd-cloudsync",
+	"version": "0.0.0",
+	"private": true,
+	"scripts": {
+		"publish": "wrangler deploy",
+		"dev": "wrangler dev"
+	},
+	"devDependencies": {
+		"@cloudflare/workers-types": "^4.20230419.0",
+		"typescript": "^5.0.4",
+		"wrangler": "^3.0.0"
+	},
+	"dependencies": {
+		"itty-router": "^3.0.12",
+		"@upstash/redis": "^1.22.0",
+		"discord-api-types": "^0.37.51"
+	}
+}
