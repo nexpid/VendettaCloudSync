@@ -2,3 +2,4 @@ node_modules
 secret_scripts
 .dev.vars
 wrangler.toml
+.env
