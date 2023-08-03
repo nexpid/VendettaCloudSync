@@ -1,7 +1,7 @@
 import { IRequest, Router } from 'itty-router';
 import { Responses } from './util/types';
 import constants from './util/constants';
-import { getUserId, grantCode } from './api/discord';
+import { getUserId, grantCode, refreshToken } from './api/discord';
 import { deleteSave, getSave, setSave } from './api/db';
 import { DBSave } from './api/db/latest';
 
@@ -9,20 +9,20 @@ const makeResponse = (status: number, message: string, error?: any) =>
 	new Response(JSON.stringify({ message, status, error: error?.toString() }), { status });
 const jsonResponse = (json: any) => new Response(JSON.stringify(json), { status: 200 });
 
-const isAuthorizedMw = async (req: IRequest) => {
+const isAuthorizedMw = async (req: IRequest, env: Env) => {
 	const auth = req.headers.get('authorization') as string;
 	if (typeof auth !== 'string') return makeResponse(401, Responses.Unauthorized);
 
 	const userId = await getUserId(auth);
 	if (!userId) return makeResponse(401, Responses.FailedToAuthorize);
 
-	req.save = await getSave(userId);
+	req.save = await getSave(env, userId);
 };
 
 const router = Router();
 
 // oauth2 stuff
-router.get('/api/get-oauth2-url', (req) => {
+router.get('/api/get-oauth2-url', () => {
 	const query = new URLSearchParams();
 	query.append('client_id', constants.oauth2.clientId);
 	query.append('redirect_uri', constants.oauth2.redirectURL);
@@ -32,7 +32,10 @@ router.get('/api/get-oauth2-url', (req) => {
 	return Response.redirect(`https://discord.com/api/oauth2/authorize?${query.toString()}`);
 });
 
-router.get('/api/oauth2-response', async (req, env: Env) => {
+/**
+ * @deprecated new path is /api/get-access-token
+ */
+router.get('/api/oauth2-response', async (req, env) => {
 	const { code, vendetta } = req.query;
 	if (typeof code !== 'string') return makeResponse(400, Responses.InvalidQuery);
 
@@ -43,12 +46,53 @@ router.get('/api/oauth2-response', async (req, env: Env) => {
 		console.log(e);
 		return makeResponse(401, Responses.FailedToAuthorize, e);
 	}
+	if (!auth || 'error' in auth) return makeResponse(401, Responses.FailedToAuthorize, auth.error);
 
-	return vendetta === 'true' ? new Response(auth) : makeResponse(200, Responses.Authorized);
+	return vendetta === 'true' ? new Response(auth.access_token) : makeResponse(200, Responses.Authorized);
+});
+
+router.get('/api/get-access-token', async (req, env) => {
+	const { code } = req.query;
+	if (typeof code !== 'string') return makeResponse(400, Responses.InvalidQuery);
+
+	let auth;
+	try {
+		auth = await grantCode(env, code);
+	} catch (e) {
+		console.log(e);
+		return makeResponse(401, Responses.FailedToAuthorize, e);
+	}
+	if (!auth || 'error' in auth) return makeResponse(401, Responses.FailedToAuthorize, auth.error);
+
+	console.log(auth);
+	return jsonResponse({
+		accessToken: auth.access_token,
+		refreshToken: auth.refresh_token,
+		expiresAt: Date.now() + auth.expires_in * 1000 - 5_000,
+	});
+});
+router.get('/api/refresh-access-token', async (req, env) => {
+	const { refresh_token: token } = req.query;
+	if (typeof token !== 'string') return makeResponse(400, Responses.InvalidQuery);
+
+	let auth;
+	try {
+		auth = await refreshToken(env, token);
+	} catch (e) {
+		console.log(e);
+		return makeResponse(401, Responses.FailedToAuthorize, e);
+	}
+	if (!auth) return makeResponse(401, Responses.FailedToAuthorize);
+
+	return jsonResponse({
+		accessToken: auth.access_token,
+		refreshToken: auth.refresh_token,
+		expiresAt: Date.now() + auth.expires_in * 1000 - 5_000,
+	});
 });
 
 // db
-router.get('/api/get-data', isAuthorizedMw, (req) => {
+router.get('/api/get-data', isAuthorizedMw, async (req) => {
 	const save = req.save as DBSave.Save;
 
 	return jsonResponse(save);
@@ -62,8 +106,6 @@ router.post(
 		} catch {
 			return makeResponse(400, Responses.InvalidBody);
 		}
-
-		console.log(parsed);
 
 		let isValid = true;
 		if (!Array.isArray(parsed.plugins)) isValid = false;
@@ -119,19 +161,17 @@ router.post(
 		req.parsed = parsed;
 	},
 	isAuthorizedMw,
-	(req) => {
+	async (req, env) => {
 		const save = req.save as DBSave.Save;
 		save.sync = req.parsed;
-		setSave(save.user, save);
 
-		return jsonResponse(save);
+		return (await setSave(env, save.user, save)) ? jsonResponse(save) : makeResponse(500, Responses.FailedToSave);
 	}
 );
-router.delete('/api/delete-data', isAuthorizedMw, (req) => {
+router.delete('/api/delete-data', isAuthorizedMw, async (req, env) => {
 	const save = req.save as DBSave.Save;
-	deleteSave(save.user);
 
-	return jsonResponse(true);
+	return (await deleteSave(env, save.user)) ? jsonResponse(true) : makeResponse(500, Responses.FailedToDelete);
 });
 
 router.all('*', () => makeResponse(404, Responses.NotFound));

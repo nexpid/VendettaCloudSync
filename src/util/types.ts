@@ -1,6 +1,8 @@
 export enum Responses {
 	NotFound = 'url not found',
 	FailedToAuthorize = 'failed to authenticate',
+	FailedToSave = 'failed to save data',
+	FailedToDelete = 'failed to delete data',
 	Unauthorized = 'not authenticated',
 	Authorized = 'successfully authenticated',
 	InvalidBody = 'bad request: invalid body',
