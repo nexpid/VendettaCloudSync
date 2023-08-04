@@ -62,9 +62,9 @@ router.get('/api/get-access-token', async (req, env) => {
 		console.log(e);
 		return makeResponse(401, Responses.FailedToAuthorize, e);
 	}
-	if (!auth || 'error' in auth) return makeResponse(401, Responses.FailedToAuthorize, auth.error);
+	if (!auth || 'error' in auth || !auth.access_token || !auth.refresh_token)
+		return makeResponse(401, Responses.FailedToAuthorize, 'error' in auth && auth.error);
 
-	console.log(auth);
 	return jsonResponse({
 		accessToken: auth.access_token,
 		refreshToken: auth.refresh_token,
@@ -82,7 +82,8 @@ router.get('/api/refresh-access-token', async (req, env) => {
 		console.log(e);
 		return makeResponse(401, Responses.FailedToAuthorize, e);
 	}
-	if (!auth) return makeResponse(401, Responses.FailedToAuthorize);
+	if (!auth || 'error' in auth || !auth.access_token || !auth.refresh_token)
+		return makeResponse(401, Responses.FailedToAuthorize, 'error' in auth && auth.error);
 
 	return jsonResponse({
 		accessToken: auth.access_token,
