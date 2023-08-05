@@ -1,5 +1,6 @@
 export enum Responses {
 	NotFound = 'url not found',
+	UnknownError = 'an unknown error occured',
 	FailedToAuthorize = 'failed to authenticate',
 	FailedToSave = 'failed to save data',
 	FailedToDelete = 'failed to delete data',

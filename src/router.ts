@@ -101,65 +101,57 @@ router.get('/api/get-data', isAuthorizedMw, async (req) => {
 router.post(
 	'/api/sync-data',
 	async (req) => {
-		let parsed;
 		try {
-			parsed = await req.json();
-		} catch {
-			return makeResponse(400, Responses.InvalidBody);
-		}
+			let parsed;
+			try {
+				parsed = await req.json();
+			} catch {
+				return makeResponse(400, Responses.InvalidBody);
+			}
 
-		let isValid = true;
-		if (!Array.isArray(parsed.plugins)) isValid = false;
-		else
-			parsed.plugins = parsed.plugins.map((x: any) => {
-				if (!isValid) return;
-				if (typeof x.id !== 'string') {
-					isValid = false;
-					return;
-				}
-				if (typeof x.enabled !== 'boolean') {
-					isValid = false;
-					return;
-				}
-				if (typeof x.options !== 'object' || Array.isArray(x.options)) {
-					isValid = false;
-					return;
-				}
-
-				let options = {};
-				let iterate = (writeTo: any, readFrom: any) => {
-					for (const [x, y] of Object.entries(readFrom)) {
-						if (['string', 'number', 'boolean'].includes(typeof y)) writeTo[x] = y;
-						else if (typeof y === 'object' && !Array.isArray(y)) {
-							writeTo[x] = {};
-							iterate(writeTo[x], y);
-						}
+			let isValid = true;
+			if (!Array.isArray(parsed.plugins)) isValid = false;
+			else
+				parsed.plugins = parsed.plugins.map((x: any) => {
+					if (!isValid) return;
+					if (typeof x.id !== 'string') {
+						isValid = false;
+						return;
 					}
-				};
-				iterate(options, x.options);
+					if (typeof x.enabled !== 'boolean') {
+						isValid = false;
+						return;
+					}
+					if (typeof x.options !== 'object' || Array.isArray(x.options)) {
+						isValid = false;
+						return;
+					}
 
-				return { id: x.id, enabled: !!x.enabled, options };
-			});
+					return { id: x.id, enabled: !!x.enabled, options: JSON.parse(JSON.stringify(x.options)) };
+				});
 
-		if (!Array.isArray(parsed.themes)) isValid = false;
-		else
-			parsed.themes = parsed.themes.map((x: any) => {
-				if (!isValid) return;
-				if (typeof x.id !== 'string') {
-					isValid = false;
-					return;
-				}
-				if (typeof x.enabled !== 'boolean') {
-					isValid = false;
-					return;
-				}
+			if (!Array.isArray(parsed.themes)) isValid = false;
+			else
+				parsed.themes = parsed.themes.map((x: any) => {
+					if (!isValid) return;
+					if (typeof x.id !== 'string') {
+						isValid = false;
+						return;
+					}
+					if (typeof x.enabled !== 'boolean') {
+						isValid = false;
+						return;
+					}
 
-				return { id: x.id, enabled: !!x.enabled };
-			});
+					return { id: x.id, enabled: !!x.enabled };
+				});
 
-		if (!isValid) return makeResponse(400, Responses.InvalidBody);
+			if (!isValid) return makeResponse(400, Responses.InvalidBody);
 
-		req.parsed = parsed;
+			req.parsed = parsed;
+		} catch (e: any) {
+			return makeResponse(500, Responses.UnknownError, `c1: ${e?.message ?? String(e)}`);
+		}
 	},
 	isAuthorizedMw,
 	async (req, env) => {
