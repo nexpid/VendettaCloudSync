@@ -1,12 +1,12 @@
 <div align="center">
-	<a href="https://github.com/Gabe616/VendettaCloudSync/stargazers">
-		<img alt="GitHub stars" src="https://img.shields.io/github/stars/Gabe616/VendettaCloudSync?style=for-the-badge&color=b4befe&labelColor=1e1e2e&logo=starship&logoColor=fff">
+	<a href="https://github.com/nexpid/VendettaCloudSync/stargazers">
+		<img alt="GitHub stars" src="https://img.shields.io/github/stars/nexpid/VendettaCloudSync?style=for-the-badge&color=b4befe&labelColor=1e1e2e&logo=starship&logoColor=fff">
 	</a>
-	<a href="https://github.com/Gabe616/VendettaCloudSync/issues">
-		<img alt="GitHub issues" src="https://img.shields.io/github/issues/Gabe616/VendettaCloudSync?style=for-the-badge&color=74c7ec&labelColor=1e1e2e&logo=gitbook&logoColor=fff">
+	<a href="https://github.com/nexpid/VendettaCloudSync/issues">
+		<img alt="GitHub issues" src="https://img.shields.io/github/issues/nexpid/VendettaCloudSync?style=for-the-badge&color=74c7ec&labelColor=1e1e2e&logo=gitbook&logoColor=fff">
 	</a>
-	<a href="https://github.com/Gabe616/VendettaCloudSync/pulls">
-		<img alt="GitHub pull requests" src="https://img.shields.io/github/issues-pr/Gabe616/VendettaCloudSync?style=for-the-badge&color=a6e3a1&labelColor=1e1e2e&logo=saucelabs&logoColor=fff">
+	<a href="https://github.com/nexpid/VendettaCloudSync/pulls">
+		<img alt="GitHub pull requests" src="https://img.shields.io/github/issues-pr/nexpid/VendettaCloudSync?style=for-the-badge&color=a6e3a1&labelColor=1e1e2e&logo=saucelabs&logoColor=fff">
 	</a>
 	<a href="https://discord.gg/n9QQ4XhhJP">
 		<img alt="Discord members" src="https://img.shields.io/discord/1015931589865246730?style=for-the-badge&color=eba0ac&labelColor=1e1e2e&logo=discord&logoColor=fff">
@@ -16,7 +16,7 @@
     <h1>🔧 Vendetta CloudSync</h1>
 </div>
 
-Backend for the [CloudSync](https://github.com/Gabe616/VendettaPlugins/tree/main/plugins/cloud-sync) Vendetta plugin
+Backend for the [CloudSync](https://github.com/nexpid/VendettaPlugins/tree/main/plugins/cloud-sync) Vendetta plugin
 
 # Selfhosting
 
@@ -31,7 +31,7 @@ Steps:
 
 1. Clone this repo
    ```sh
-   git clone https://github.com/Gabe616/VendettaCloudSync
+   git clone https://github.com/nexpid/VendettaCloudSync
    cd VendettaCloudSync
    ```
 2. Rename `.dev.vars.EXAMPLE` to `.dev.vars` and replace `CLIENT_SECRET_HERE` with your Discord bot's secret

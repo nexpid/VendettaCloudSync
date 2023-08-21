@@ -5,6 +5,6 @@ export default {
 		const url = new URL(request.url);
 		if (url.pathname.startsWith('/api')) return router.handle(request, env, ctx);
 
-		return Response.redirect('https://github.com/Gabe616/VendettaPlugins/tree/main/plugins/cloud-sync');
+		return Response.redirect('https://github.com/nexpid/VendettaPlugins/tree/main/plugins/cloud-sync');
 	},
 };
