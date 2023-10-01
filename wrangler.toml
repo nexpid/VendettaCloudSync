@@ -1,0 +1,9 @@
+name = "vd-cloudsync"
+main = "src/worker.ts"
+compatibility_date = "2023-09-22"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "VendettaCloudSync"
+database_id = "61cfcfdb-1845-4be8-9fd6-c4bdee4fa4c7"
+preview_database_id = "61cfcfdb-1845-4be8-9fd6-c4bdee4fa4c7"
