@@ -36,6 +36,7 @@ export async function getSave(env: Env, user: string): Promise<DBSave.Save> {
 }
 
 export async function setSave(env: Env, user: string, save: DBSave.Save): Promise<boolean> {
+	if (!save.sync.plugins.length && !save.sync.themes.length) return await deleteSave(env, user);
 	return (
 		await env.DB.prepare(`insert or replace into data (user, version, sync) values (?1, ?2, ?3)`)
 			.bind(user, save.version, JSON.stringify(save.sync))

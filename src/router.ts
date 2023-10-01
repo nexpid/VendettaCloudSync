@@ -167,6 +167,22 @@ router.delete('/api/delete-data', isAuthorizedMw, async (req, env) => {
 	return (await deleteSave(env, save.user)) ? jsonResponse(true) : makeResponse(500, Responses.FailedToDelete);
 });
 
+// misc
+router.get('/api/download', (req) => {
+	const { data } = req.query;
+	if (!data) return makeResponse(400, Responses.InvalidQuery);
+
+	const body = data.toString();
+
+	return new Response(body, {
+		headers: {
+			'Content-Type': 'text/plain',
+			'Content-Length': body.length.toString(),
+			'Content-Disposition': `attachment; filename="CloudSync_${Math.floor(Date.now() / 1000)}.txt"`,
+		},
+	});
+});
+
 router.all('*', () => makeResponse(404, Responses.NotFound));
 
 export default router;
