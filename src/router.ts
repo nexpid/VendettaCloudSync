@@ -167,6 +167,47 @@ router.delete('/api/delete-data', isAuthorizedMw, async (req, env) => {
 	return (await deleteSave(env, save.user)) ? jsonResponse(true) : makeResponse(500, Responses.FailedToDelete);
 });
 
+// local backups
+const fileReq = (key: string, file: string) =>
+	new Request(`https://example.com/api/file/${encodeURIComponent(key)}/${encodeURIComponent(file)}`);
+
+router.post('/api/file/upload', isAuthorizedMw, async (req) => {
+	if (req.headers.get('Content-type') !== 'text/plain') return makeResponse(400, Responses.InvalidBody);
+	let data;
+	try {
+		data = await req.text();
+	} catch {
+		return makeResponse(400, Responses.InvalidBody);
+	}
+
+	const key = [...new Uint8Array(crypto.getRandomValues(new Uint8Array(16)))].map((x) => x.toString(16).padStart(2, '0')).join('');
+	const file = `CloudSync_${Math.floor(Date.now())}.txt`;
+
+	await caches.default.put(
+		fileReq(key, file),
+		new Response(data, {
+			headers: {
+				'Cache-control': 'public, max-age=600',
+				'Content-type': 'text/plain',
+				'Content-length': data.length,
+				'Content-disposition': `attachment; filename=${JSON.stringify(file)}`,
+			},
+		})
+	);
+
+	return Response.json({
+		key,
+		file,
+	});
+});
+router.get('/api/files/:key/:file', async (req) => {
+	const key = req.params.key,
+		file = req.params.file;
+	if (!key || !file) return makeResponse(400, Responses.InvalidQuery);
+
+	return (await caches.default.match(fileReq(key, file))) ?? makeResponse(400, Responses.InvalidQuery);
+});
+
 // misc
 router.get('/api/download', (req) => {
 	const { data } = req.query;
