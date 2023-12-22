@@ -7,7 +7,6 @@ import { DBSave } from './api/db/latest';
 
 const makeResponse = (status: number, message: string, error?: any) =>
 	new Response(JSON.stringify({ message, status, error: error?.toString() }), { status });
-const jsonResponse = (json: any) => new Response(JSON.stringify(json), { status: 200 });
 
 const isAuthorizedMw = async (req: IRequest, env: Env) => {
 	const auth = req.headers.get('authorization') as string;
@@ -65,7 +64,7 @@ router.get('/api/get-access-token', async (req, env) => {
 	if (!auth || 'error' in auth || !auth.access_token || !auth.refresh_token)
 		return makeResponse(401, Responses.FailedToAuthorize, 'error' in auth && auth.error);
 
-	return jsonResponse({
+	return Response.json({
 		accessToken: auth.access_token,
 		refreshToken: auth.refresh_token,
 		expiresAt: Date.now() + auth.expires_in * 1000 - 5_000,
@@ -85,7 +84,7 @@ router.get('/api/refresh-access-token', async (req, env) => {
 	if (!auth || 'error' in auth || !auth.access_token || !auth.refresh_token)
 		return makeResponse(401, Responses.FailedToAuthorize, 'error' in auth && auth.error);
 
-	return jsonResponse({
+	return Response.json({
 		accessToken: auth.access_token,
 		refreshToken: auth.refresh_token,
 		expiresAt: Date.now() + auth.expires_in * 1000 - 5_000,
@@ -96,7 +95,7 @@ router.get('/api/refresh-access-token', async (req, env) => {
 router.get('/api/get-data', isAuthorizedMw, async (req) => {
 	const save = req.save as DBSave.Save;
 
-	return jsonResponse(save);
+	return Response.json(save);
 });
 router.post(
 	'/api/sync-data',
@@ -158,70 +157,13 @@ router.post(
 		const save = req.save as DBSave.Save;
 		save.sync = req.parsed;
 
-		return (await setSave(env, save.user, save)) ? jsonResponse(save) : makeResponse(500, Responses.FailedToSave);
+		return (await setSave(env, save.user, save)) ? Response.json(save) : makeResponse(500, Responses.FailedToSave);
 	}
 );
 router.delete('/api/delete-data', isAuthorizedMw, async (req, env) => {
 	const save = req.save as DBSave.Save;
 
-	return (await deleteSave(env, save.user)) ? jsonResponse(true) : makeResponse(500, Responses.FailedToDelete);
-});
-
-// local backups
-const fileReq = (key: string, file: string) =>
-	new Request(`https://example.com/api/file/${encodeURIComponent(key)}/${encodeURIComponent(file)}`);
-
-router.post('/api/file/upload', isAuthorizedMw, async (req) => {
-	if (req.headers.get('Content-type') !== 'text/plain') return makeResponse(400, Responses.InvalidBody);
-	let data;
-	try {
-		data = await req.text();
-	} catch {
-		return makeResponse(400, Responses.InvalidBody);
-	}
-
-	const key = [...new Uint8Array(crypto.getRandomValues(new Uint8Array(16)))].map((x) => x.toString(16).padStart(2, '0')).join('');
-	const file = `CloudSync_${Math.floor(Date.now())}.txt`;
-
-	await caches.default.put(
-		fileReq(key, file),
-		new Response(data, {
-			headers: {
-				'Cache-control': 'public, max-age=600',
-				'Content-type': 'text/plain',
-				'Content-length': data.length,
-				'Content-disposition': `attachment; filename=${JSON.stringify(file)}`,
-			},
-		})
-	);
-
-	return Response.json({
-		key,
-		file,
-	});
-});
-router.get('/api/files/:key/:file', async (req) => {
-	const key = req.params.key,
-		file = req.params.file;
-	if (!key || !file) return makeResponse(400, Responses.InvalidQuery);
-
-	return (await caches.default.match(fileReq(key, file))) ?? makeResponse(400, Responses.InvalidQuery);
-});
-
-// misc
-router.get('/api/download', (req) => {
-	const { data } = req.query;
-	if (!data) return makeResponse(400, Responses.InvalidQuery);
-
-	const body = data.toString();
-
-	return new Response(body, {
-		headers: {
-			'Content-Type': 'text/plain',
-			'Content-Length': body.length.toString(),
-			'Content-Disposition': `attachment; filename="CloudSync_${Math.floor(Date.now() / 1000)}.txt"`,
-		},
-	});
+	return (await deleteSave(env, save.user)) ? Response.json(true) : makeResponse(500, Responses.FailedToDelete);
 });
 
 router.all('*', () => makeResponse(404, Responses.NotFound));
