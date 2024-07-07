@@ -16,6 +16,7 @@ const isAuthorizedMw = async (req: IRequest, env: Env) => {
 	if (!userId) return makeResponse(401, Responses.FailedToAuthorize);
 
 	req.save = await getSave(env, userId);
+	if (req.save.version !== 1) return makeResponse(403, "cannot downgrade data! use the newest Cloud Sync version");
 };
 
 const router = Router();
