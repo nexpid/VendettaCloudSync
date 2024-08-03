@@ -7,7 +7,7 @@ settings:
 dependencies:
   '@upstash/redis':
     specifier: ^1.22.0
-    version: 1.22.0
+    version: 1.28.4
   discord-api-types:
     specifier: ^0.37.51
     version: 0.37.51
@@ -299,12 +299,10 @@ packages:
     dev: true
     optional: true
 
-  /@upstash/redis@1.22.0:
-    resolution: {integrity: sha512-sXoJDoEqqik0HbrNE7yRWckOySEFsoBxfRdCgOqkc0w6py19ZZG50SpGkDDEUXSnBqP8VgGYXhWAiBpqxrt5oA==}
+  /@upstash/redis@1.28.4:
+    resolution: {integrity: sha512-UalkSAny/dz1m8giEhD3Y5ru1o+CPHI32wFyS3MyzDzj2TRvEN+lTw+mPwi20ojk0H2gs8TBW3qsrvwuLLy+pA==}
     dependencies:
-      isomorphic-fetch: 3.0.0
-    transitivePeerDependencies:
-      - encoding
+      crypto-js: 4.2.0
     dev: false
 
   /acorn-walk@8.2.0:
@@ -380,13 +378,17 @@ packages:
       normalize-path: 3.0.0
       readdirp: 3.6.0
     optionalDependencies:
-      fsevents: 2.3.2
+      fsevents: 2.3.3
     dev: true
 
   /cookie@0.5.0:
     resolution: {integrity: sha512-YZ3GUyn/o8gfKJlnlX7g7xq4gyO6OSuhGPKaaGssGB2qgDUS0gPgtTvoyZLTt9Ab6dC4hfc9dV5arkvc/OCmrw==}
     engines: {node: '>= 0.6'}
     dev: true
+
+  /crypto-js@4.2.0:
+    resolution: {integrity: sha512-KALDyEYgpY+Rlob/iriUtjV6d5Eq+Y191A5g4UqLAi8CyGP9N1+FdVbkc1SxKc2r4YAYqG8JzO2KGL+AizD70Q==}
+    dev: false
 
   /data-uri-to-buffer@2.0.2:
     resolution: {integrity: sha512-ND9qDTLc6diwj+Xe5cdAgVTbLVdXbtxTJRXRhli8Mowuaan+0EJOtdqJ0QCHNSSPyoXGx9HX2/VMnKeC34AChA==}
@@ -459,8 +461,8 @@ packages:
       to-regex-range: 5.0.1
     dev: true
 
-  /fsevents@2.3.2:
-    resolution: {integrity: sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==}
+  /fsevents@2.3.3:
+    resolution: {integrity: sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==}
     engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
     os: [darwin]
     requiresBuild: true
@@ -508,15 +510,6 @@ packages:
     resolution: {integrity: sha512-41Cifkg6e8TylSpdtTpeLVMqvSBEVzTttHvERD741+pnZ8ANv0004MRL43QKPDlK9cGvNp6NZWZUBlbGXYxxng==}
     engines: {node: '>=0.12.0'}
     dev: true
-
-  /isomorphic-fetch@3.0.0:
-    resolution: {integrity: sha512-qvUtwJ3j6qwsF3jLxkZ72qCgjMysPzDfeV240JHiGZsANBYd+EEuu35v7dfrJ9Up0Ak07D7GGSkGhCHTqg/5wA==}
-    dependencies:
-      node-fetch: 2.6.12
-      whatwg-fetch: 3.6.17
-    transitivePeerDependencies:
-      - encoding
-    dev: false
 
   /itty-router@3.0.12:
     resolution: {integrity: sha512-s98XTPhle6GGbaFf0kYrOD3Q8gyhnqvOqkwYijC3AmkceNKqWUp13YHg6dWmqmVv4pP7l7c94XI92I0EXVGO0w==}
@@ -571,18 +564,6 @@ packages:
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
     dev: true
-
-  /node-fetch@2.6.12:
-    resolution: {integrity: sha512-C/fGU2E8ToujUivIO0H+tpQ6HWo4eEmchoPIoXtxCrVghxdKq+QOHqEZW7tuP3KlV3bC8FRMO5nMCC7Zm1VP6g==}
-    engines: {node: 4.x || >=6.0.0}
-    peerDependencies:
-      encoding: ^0.1.0
-    peerDependenciesMeta:
-      encoding:
-        optional: true
-    dependencies:
-      whatwg-url: 5.0.0
-    dev: false
 
   /node-forge@1.3.1:
     resolution: {integrity: sha512-dPEtOeMvF9VMcYV/1Wb8CPoVAXtp6MKMlcbAt4ddqmGqUJ6fQZFXkNZNkNlfevtNkGtaSoXf/vNNNSvgrdXwtA==}
@@ -688,10 +669,6 @@ packages:
       is-number: 7.0.0
     dev: true
 
-  /tr46@0.0.3:
-    resolution: {integrity: sha512-N3WMsuqV66lT30CrXNbEjx4GEwlow3v6rr4mCcv6prnfwhS01rkgyFdjPNBYd9br7LpXV1+Emh01fHnq2Gdgrw==}
-    dev: false
-
   /tslib@2.6.1:
     resolution: {integrity: sha512-t0hLfiEKfMUoqhG+U1oid7Pva4bbDPHYfJNiB7BiIjRkj1pyC++4N3huJfqY6aRH6VTB0rvtzQwjM4K6qpfOig==}
     dev: true
@@ -708,21 +685,6 @@ packages:
     dependencies:
       busboy: 1.6.0
     dev: true
-
-  /webidl-conversions@3.0.1:
-    resolution: {integrity: sha512-2JAn3z8AR6rjK8Sm8orRC0h/bcl/DqL7tRPdGZ4I1CjdF+EaMLmYxBHyXuKL849eucPFhvBoxMsflfOb8kxaeQ==}
-    dev: false
-
-  /whatwg-fetch@3.6.17:
-    resolution: {integrity: sha512-c4ghIvG6th0eudYwKZY5keb81wtFz9/WeAHAoy8+r18kcWlitUIrmGFQ2rWEl4UCKUilD3zCLHOIPheHx5ypRQ==}
-    dev: false
-
-  /whatwg-url@5.0.0:
-    resolution: {integrity: sha512-saE57nupxk6v3HY35+jzBwYa0rKSy0XR8JSxZPwgLr7ys0IBzhGviA1/TUGJLmSVqs8pb9AnvICXEuOHLprYTw==}
-    dependencies:
-      tr46: 0.0.3
-      webidl-conversions: 3.0.1
-    dev: false
 
   /workerd@1.20231030.0:
     resolution: {integrity: sha512-+FSW+d31f8RrjHanFf/R9A+Z0csf3OtsvzdPmAKuwuZm/5HrBv83cvG9fFeTxl7/nI6irUUXIRF9xcj/NomQzQ==}
@@ -757,7 +719,7 @@ packages:
       source-map-support: 0.5.21
       xxhash-wasm: 1.0.2
     optionalDependencies:
-      fsevents: 2.3.2
+      fsevents: 2.3.3
     transitivePeerDependencies:
       - bufferutil
       - supports-color
