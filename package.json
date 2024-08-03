@@ -14,6 +14,6 @@
 	"dependencies": {
 		"@upstash/redis": "^1.22.0",
 		"discord-api-types": "^0.37.51",
-		"itty-router": "^3.0.12"
+		"itty-router": "^5.0.0"
 	}
 }
