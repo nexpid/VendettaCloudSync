@@ -1,3 +1,6 @@
+> [!NOTE]
+> # Superseeded by [CloudSync](https://github.com/nexpid/CloudSync)
+
 <div align="center">
     <a href="https://github.com/nexpid/VendettaCloudSync/stargazers">
         <img alt="GitHub stars" src="https://img.shields.io/github/stars/nexpid/VendettaCloudSync?style=for-the-badge&color=b4befe&labelColor=1e1e2e&logo=starship&logoColor=fff">
